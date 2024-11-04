@@ -1,19 +1,19 @@
 ﻿@model IEnumerable<MvcMusicStore.Models.Genre>
 
-<li class="dropdown">
-    <a href="@Url.Action("Store")" class="dropdown-toggle" data-toggle="dropdown">Store <b class="caret"></b></a>
+<li class="nav-item dropdown">
+    <a href="@Url.Action("Store")" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Store <b class="caret"></b></a>
     <ul class="dropdown-menu">
         @foreach (var genre in Model)
         {
             <li>
                 @Html.ActionLink(genre.Name,
                     "Browse", "Store",
-                    new { Genre = genre.Name }, null)
+                    new { Genre = genre.Name }, new { @class = "dropdown-item" })
             </li>
         }
-        <li class="divider"></li>
+        <li><hr class="dropdown-divider"></li>
         <li>
-            @Html.ActionLink("More...", "Index", "Store")
+            @Html.ActionLink("More...", "Index", "Store", null, new { @class = "dropdown-item" })
         </li>
     </ul>
 </li>
