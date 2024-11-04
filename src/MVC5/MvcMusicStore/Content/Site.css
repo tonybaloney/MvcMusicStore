@@ -56,6 +56,7 @@ ul#album-list li img {
     box-shadow: 1px 1px 5px #999;
     border: none;
     padding: 0;
+    height: 68%;
 }
 
 ul#album-list li a, ul#album-details li a {
