@@ -23,8 +23,8 @@
         <em>Price:</em>
         @Html.DisplayFor(model => model.Price)
     </p>
-    <p class="btn btn-default">
-        <span class="glyphicon glyphicon-shopping-cart"></span>
+    <p class="btn btn-secondary">
+        <i class="bi bi-cart"></i>
         @Html.ActionLink("Add to cart", "AddToCart",
             "ShoppingCart", new { id = Model.AlbumId }, "")
     </p>
