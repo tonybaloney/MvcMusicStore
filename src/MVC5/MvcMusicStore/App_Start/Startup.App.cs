@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies;
 using MvcMusicStore.Models;
 using Owin;
 using System.Configuration;
-using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace MvcMusicStore
 {
@@ -13,7 +11,7 @@ namespace MvcMusicStore
     {
         public void ConfigureApp(IAppBuilder app)
         {
-            System.Data.Entity.Database.SetInitializer(new MvcMusicStore.Models.SampleData());
+            Database.SetInitializer(new SampleData());
 
             CreateAdminUser();
         }
@@ -23,6 +21,8 @@ namespace MvcMusicStore
             string _username = ConfigurationManager.AppSettings["DefaultAdminUsername"];
             string _password = ConfigurationManager.AppSettings["DefaultAdminPassword"];
             string _role = "Administrator";
+
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Migrations.Configuration>());
 
             var context = new ApplicationDbContext();
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
