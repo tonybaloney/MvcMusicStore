@@ -28,9 +28,13 @@ namespace FunctionTrigger
 
             var response = chatClient.CompleteChat(
                 [
-                new SystemChatMessage("You rewrite user queries into SQL Server FTS syntax by extracting key terms. Do not return a SQL statement, just return the contents of the phrases or terms. If the user writes a query in any language other than English, rewrite it in English."),
+                new SystemChatMessage("You rewrite user queries to help users find a record in an online music store. If you know the name of the record based on the user input, return it in the query. If you don't, return the keywords from the query. If the user enters the query in any language other than English, return the result in English. Only return the name of the record, not the name of the band."),
                 new UserChatMessage("The led zeppelin album with the blimp"),
                 new AssistantChatMessage("Led Zeppelin IV"),
+                new UserChatMessage("Nirvana baby"),
+                new AssistantChatMessage("Nevermind"),
+                new UserChatMessage("Oasis album wonderwall"),
+                new AssistantChatMessage("(What's the Story) Morning Glory?"),
                 new UserChatMessage(query),
             ]);
 

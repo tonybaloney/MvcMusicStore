@@ -1,14 +1,21 @@
 ﻿using MvcMusicStore.Models;
-using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace MvcMusicStore.Controllers
 {
     public class StoreController : Controller
     {
+        AIFunctionApiClient aiFunctionApiClient;
+
+        public StoreController()
+        {
+            aiFunctionApiClient = new AIFunctionApiClient(ConfigurationManager.AppSettings["AIFunctionHost"]);
+        }
+
         MusicStoreEntities storeDB = new MusicStoreEntities();
         //
         // GET: /Store/
@@ -52,6 +59,16 @@ namespace MvcMusicStore.Controllers
                 .ToList();
 
             return PartialView(genres);
+        }
+
+        async public Task<ActionResult> Search(string q)
+        {
+            string query = await aiFunctionApiClient.GetRecordSearchAsync(q);
+            var albums = storeDB.Albums
+                .Include("Artist")
+                .Where(a => DbFunctions.Like(a.Title, query))
+                .Take(10);
+            return View(new ViewModels.SearchViewModel { Query = q, AiQuery = query, Results = albums});
         }
     }
 }
