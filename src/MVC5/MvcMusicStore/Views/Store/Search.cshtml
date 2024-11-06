@@ -7,8 +7,14 @@
     <h3>
         Search Results
     </h3>
-    <h4>You searched for "@Model.Query" and AI thinks you wanted "@Model.AiQuery"</h4>
+    <p>You searched for "@Model.Query" and AI thinks you wanted "@Model.AiQuery"</p>
 
+    @if (Model.Results == null || Model.Results.Count() == 0)
+    {
+        <p class="not-found">Sorry, we don't have that record in our store.</p>
+    }
+    else
+    {
     <ul id="album-list" class="list-unstyled row">
         @foreach (var album in Model.Results)
         {
@@ -23,4 +29,5 @@
             </li>
         }
     </ul>
+    }
 </div>

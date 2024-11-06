@@ -1,4 +1,5 @@
 ﻿using MvcMusicStore.Models;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
@@ -63,10 +64,22 @@ namespace MvcMusicStore.Controllers
 
         async public Task<ActionResult> Search(string q)
         {
+            // If the query is empty, show an error
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return View(new ViewModels.SearchViewModel { Query = string.Empty, AiQuery = string.Empty, Results = new List<Album>() });
+            }
+
+
             string query = await aiFunctionApiClient.GetRecordSearchAsync(q);
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                query = q;
+            }
+
             var albums = storeDB.Albums
                 .Include("Artist")
-                .Where(a => DbFunctions.Like(a.Title, query))
+                .Where(a => DbFunctions.Like(a.Title, $"%{query}%"))
                 .Take(10);
             return View(new ViewModels.SearchViewModel { Query = q, AiQuery = query, Results = albums});
         }
