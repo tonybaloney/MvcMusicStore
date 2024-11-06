@@ -10,7 +10,7 @@ namespace FunctionTrigger
 {
     public class RecordSearch(AzureOpenAIClient openAIClient, ILogger<RecordSearch> logger)
     {
-        private readonly string _openAIChatDeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME") ?? "chat";
+        private readonly string _openAIChatDeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME") ?? "gpt-4o-mini";
 
         [Function("RecordSearch")]
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
