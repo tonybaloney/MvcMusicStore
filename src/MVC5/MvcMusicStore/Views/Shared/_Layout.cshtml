@@ -4,6 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title – MVC Music Store (Preview)</title>
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Save preview arguments
+        if (getQueryParam('preview') === '1') {
+            document.cookie = "preview=1; path=/";
+        } else if (getQueryParam('preview') === '0') {
+            document.cookie = "preview=0; path=/";
+        }
+    </script>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/preview")

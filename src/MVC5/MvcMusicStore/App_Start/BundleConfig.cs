@@ -26,9 +26,6 @@ namespace MvcMusicStore
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
-
-            bundles.Add(new ScriptBundle("~/bundles/preview").Include(
-                      "~/Scripts/preview.js"));
         }
     }
 }
