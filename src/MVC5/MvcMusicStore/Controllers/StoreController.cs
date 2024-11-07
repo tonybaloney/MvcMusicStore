@@ -79,7 +79,7 @@ namespace MvcMusicStore.Controllers
 
             var albums = storeDB.Albums
                 .Include("Artist")
-                .Where(a => DbFunctions.Like(a.Title, $"%{query}%"))
+                .Where(a => DbFunctions.Like(a.Title, query))
                 .Take(10);
             return View(new ViewModels.SearchViewModel { Query = q, AiQuery = query, Results = albums});
         }

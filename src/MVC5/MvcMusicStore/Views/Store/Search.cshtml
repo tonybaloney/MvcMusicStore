@@ -9,7 +9,7 @@
     </h3>
     <p>You searched for "@Model.Query" and AI thinks you wanted "@Model.AiQuery"</p>
 
-    @if (Model.Results == null || Model.Results.Count() == 0)
+    @if (Model.Results == null || !Model.Results.Any())
     {
         <p class="not-found">Sorry, we don't have that record in our store.</p>
     }
