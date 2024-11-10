@@ -8,9 +8,9 @@ namespace MvcMusicStoreCore.Models
 
         public int AlbumId { get; set; }
 
-        public Genre Genre { get; set; }
+        public string GenreName { get; set; }
 
-        public Artist Artist { get; set; }
+        public string ArtistName { get; set; }
 
         [Required]
         [StringLength(160, MinimumLength = 2)]

@@ -13,6 +13,7 @@ namespace MvcMusicStoreCore.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseCosmos(connectionString, databaseName: "MvcMusicStore");
+            optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
             {
                 var testGenre = await context.Set<Genre>().FirstOrDefaultAsync(b => b.Name == "Pop");
@@ -25,12 +26,12 @@ namespace MvcMusicStoreCore.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultContainer("Store");
             modelBuilder.Entity<Album>(entity =>
             {
                 entity.HasKey(e => e.AlbumId);
                 entity.Property(e => e.Title).IsRequired();
-                entity.HasOne(d => d.Artist).WithMany(p => p.Albums).HasForeignKey(d => d.AlbumId);
-                entity.HasOne(d => d.Genre).WithMany(p => p.Albums).HasForeignKey(d => d.AlbumId);
+                entity.ToContainer("Albums");
             });
             modelBuilder.Entity<Artist>(entity =>
             {
@@ -39,7 +40,7 @@ namespace MvcMusicStoreCore.Models
             });
             modelBuilder.Entity<Genre>(entity =>
             {
-                entity.HasKey(e => e.GenreId);
+                entity.HasKey(e => e.Name);
                 entity.Property(e => e.Name).IsRequired();
             });
         }
