@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="wwwroot\Images\Albums\*.jpg" />
-    <None Remove="wwwroot\Images\home-showcase.png" />
-    <None Remove="wwwroot\Images\logo.png" />
-    <None Remove="wwwroot\Images\logo.svg" />
-    <None Remove="wwwroot\Images\placeholder.png" />
-    <None Remove="wwwroot\Images\placeholder.svg" />
+    <None Remove="wwwroot\images\albums\*.jpg" />
+    <None Remove="wwwroot\images\home-showcase.png" />
+    <None Remove="wwwroot\images\logo.png" />
+    <None Remove="wwwroot\images\logo.svg" />
+    <None Remove="wwwroot\images\placeholder.png" />
+    <None Remove="wwwroot\images\placeholder.svg" />
   </ItemGroup>
 
   <ItemGroup>
