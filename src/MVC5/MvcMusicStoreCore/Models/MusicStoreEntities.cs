@@ -16,7 +16,7 @@ namespace MvcMusicStoreCore.Models
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
             {
-                var testGenre = await context.Set<Genre>().FirstOrDefaultAsync(b => b.Name == "Pop");
+                var testGenre = await context.Set<Genre>().FirstOrDefaultAsync(b => b.Name == "Pop", cancellationToken);
                 if (testGenre == null)
                 {
                     await SampleData.Seed(context);

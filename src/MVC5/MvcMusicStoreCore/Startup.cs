@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using MvcMusicStoreCore.Extensions;
 using MvcMusicStoreCore.Models;
 
 namespace MvcMusicStoreCore
@@ -20,15 +16,9 @@ namespace MvcMusicStoreCore
         {
             services.AddSystemWebAdapters();
             services.AddControllersWithViews();
-            services.AddScoped<MusicStoreEntities>(_ =>
-                {
-                    var entities = new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities"));
-                    entities.Database.EnsureDeletedAsync().GetAwaiter().GetResult();
-                    entities.Database.EnsureCreatedAsync().GetAwaiter().GetResult();
-                    return entities;
-                }
-                );
+            services.AddScoped<MusicStoreEntities>(_ => new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities")));
             services.AddTransient<SampleData>();
+            services.AddScoped<AIFunctionApiClient>(_ => new AIFunctionApiClient(Configuration.GetConnectionString("AIFunctionEndpoint")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

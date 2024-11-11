@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcMusicStoreCore.Extensions;
+using MvcMusicStoreCore.ViewModels;
 
 namespace MvcMusicStoreCore.Controllers
 {
@@ -24,10 +25,9 @@ namespace MvcMusicStoreCore.Controllers
         public async Task<ActionResult> Browse(string genre)
         {
             // Retrieve Genre genre and its Associated associated Albums albums from database
-            var genreModel = await storeDB.Genres.Include("Albums")
-                .SingleAsync(g => g.Name == genre);
+            var albums = await storeDB.Albums.Where(a => a.GenreName == genre).ToListAsync();
 
-            return View(genreModel);
+            return View(new BrowseViewModel() { Genre = genre, Albums = albums });
         }
 
         public async Task<ActionResult> Details(int id) 
@@ -42,7 +42,7 @@ namespace MvcMusicStoreCore.Controllers
             // If the query is empty, show an error
             if (string.IsNullOrWhiteSpace(q))
             {
-                return View(new ViewModels.SearchViewModel { Query = string.Empty, AiQuery = string.Empty, Results = new List<Album>() });
+                return View(new SearchViewModel { Query = string.Empty, AiQuery = string.Empty, Results = [] });
             }
 
 
@@ -52,11 +52,12 @@ namespace MvcMusicStoreCore.Controllers
                 query = q;
             }
 
+#pragma warning disable CA1862 // Not supported in Cosmos DB
             var albums = storeDB.Albums
-                .Include("Artist")
-                .Where(a => EF.Functions.Like(a.Title, query))
+                .Where(a => a.Title.ToLower().Contains(query.ToLower()))
                 .Take(10);
-            return View(new ViewModels.SearchViewModel { Query = q, AiQuery = query, Results = albums});
+#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+            return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync()});
         }
     }
 }
