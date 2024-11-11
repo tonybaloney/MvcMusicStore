@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcMusicStoreCore.Extensions;
 using MvcMusicStoreCore.ViewModels;
+using Microsoft.EntityFrameworkCore.Cosmos.Extensions;
 
 namespace MvcMusicStoreCore.Controllers
 {
@@ -46,7 +47,7 @@ namespace MvcMusicStoreCore.Controllers
             }
 
 
-            string query = await aiFunctionApiClient.GetRecordSearchAsync(q);
+            var query = await aiFunctionApiClient.GetRecordSearchAsync(q);
             if (string.IsNullOrWhiteSpace(query))
             {
                 query = q;
@@ -57,7 +58,30 @@ namespace MvcMusicStoreCore.Controllers
                 .Where(a => a.Title.ToLower().Contains(query.ToLower()))
                 .Take(10);
 #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
-            return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync()});
+
+            float[]? embeddings;
+            // If there is a match, get the embeddings for the record
+            if (albums.Any())
+            {
+                var album = albums.First();
+                embeddings = await aiFunctionApiClient.GetRecordEmbeddingsAsync(album.Title, album.ArtistName, album.GenreName);
+            } else
+            {
+                embeddings = await aiFunctionApiClient.GetRecordEmbeddingsAsync(query, "", "");
+            }
+
+            if (embeddings == null)
+            {
+                return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync(), Similar = [] });
+            }
+
+            // Get similar albums by vector distance
+            var similarAlbums = await storeDB.Albums
+                .OrderBy(s => EF.Functions.VectorDistance(s.Embeddings, embeddings))
+                .Take(5)
+                .ToListAsync();
+
+            return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync(), Similar = similarAlbums});
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 
@@ -32,6 +33,7 @@ namespace MvcMusicStoreCore.Models
                 entity.HasKey(e => e.AlbumId);
                 entity.Property(e => e.Title).IsRequired();
                 entity.ToContainer("Albums");
+                entity.Property(e => e.Embeddings).IsVector(DistanceFunction.Cosine, dimensions: 512);
             });
             modelBuilder.Entity<Artist>(entity =>
             {

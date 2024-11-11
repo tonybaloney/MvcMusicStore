@@ -37,4 +37,26 @@ public class AIFunctionApiClient
             return null;
         }
     }
+
+    public async Task<float[]?> GetRecordEmbeddingsAsync(string name, string artist, string genre)
+    {
+        try
+        {
+            var uriBuilder = new UriBuilder(client.BaseAddress)
+            {
+                Path = "/api/RecordToEmbedding",
+                Query = $"name={Uri.EscapeDataString(name)}&artist={Uri.EscapeDataString(artist)}&genre={Uri.EscapeDataString(genre)}"
+            };
+            HttpResponseMessage response = await client.GetAsync(uriBuilder.Uri);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<float[]>(responseBody);
+        }
+        catch (HttpRequestException e)
+        {
+            // Handle exception
+            Console.WriteLine($"Request error: {e.Message}");
+            return null;
+        }
+    }
 }

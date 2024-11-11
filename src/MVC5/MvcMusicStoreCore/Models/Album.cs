@@ -25,5 +25,6 @@ namespace MvcMusicStoreCore.Models
         [DisplayName("Album Art URL")]
         [StringLength(1024)]
         public string AlbumArtUrl { get; set; }
+        public float[] Embeddings { get; set; }
     }
 }

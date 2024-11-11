@@ -30,4 +30,23 @@
         }
     </ul>
     }
+
+    @if (Model.Similar != null && Model.Similar.Any())
+    {
+        <h3>Similar Albums</h3>
+        <ul id="album-list" class="list-unstyled row">
+            @foreach (var album in Model.Similar)
+            {
+                <li class="col-lg-2 col-md-3 col-sm-4 col-6">
+                    <a href="@Url.Action("Details", new { id = album.AlbumId })">
+                        @if (!string.IsNullOrEmpty(album.AlbumArtUrl))
+                        {
+                            <img alt="@album.Title" class="img-thumbnail" src="@Url.Content(@album.AlbumArtUrl)" />
+                        }
+                        <h5 class="control-label">@album.Title</h5>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
 </div>

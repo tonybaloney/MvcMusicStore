@@ -7,5 +7,6 @@ namespace MvcMusicStoreCore.ViewModels
         public string Query { get; set; }
         public string AiQuery { get; set; }
         public IEnumerable<Album> Results { get; set; }
+        public List<Album> Similar { get; internal set; }
     }
 }
