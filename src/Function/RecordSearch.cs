@@ -2,15 +2,17 @@ using Azure.AI.OpenAI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using OpenAI.Chat;
+using OpenAI.Embeddings;
 
 namespace FunctionTrigger
 {
     public class RecordSearch(AzureOpenAIClient openAIClient, ILogger<RecordSearch> logger)
     {
         private readonly string _openAIChatDeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME") ?? "gpt-4o-mini";
+
+        private readonly string _openAIEmbeddingsDeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME") ?? "embeddings";
 
         [Function("RecordSearch")]
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
@@ -44,6 +46,27 @@ namespace FunctionTrigger
             logger.LogInformation($"Response: {keywordQuery}");
 
             return new OkObjectResult(keywordQuery);
+        }
+
+        [Function("RecordToEmbedding")]
+        public IActionResult RunRecordToEmbedding([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
+        {
+            // Get the query parameter from the request
+
+            string? name = req.Query["name"];
+            string? artist = req.Query["artist"];
+            string? genre = req.Query["genre"];
+
+            if (string.IsNullOrEmpty(name))
+            {
+                return new BadRequestObjectResult("Please pass a query on the query string");
+            }
+            var embeddingClient = openAIClient.GetEmbeddingClient(_openAIEmbeddingsDeploymentName);
+
+            string query = $"Record: {name} by Artist: {artist} Genre: {genre}";
+
+            var result = embeddingClient.GenerateEmbedding(query, new EmbeddingGenerationOptions { Dimensions = 512 });
+            return new OkObjectResult(result.Value.ToFloats().ToArray());
         }
     }
 }
