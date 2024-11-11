@@ -16,7 +16,7 @@ namespace MvcMusicStoreCore
         {
             services.AddSystemWebAdapters();
             services.AddControllersWithViews();
-            services.AddScoped<MusicStoreEntities>(_ => new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities")));
+            services.AddScoped<MusicStoreEntities>(ctx => new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities"), ctx.GetRequiredService<AIFunctionApiClient>()));
             services.AddTransient<SampleData>();
             services.AddScoped<AIFunctionApiClient>(_ => new AIFunctionApiClient(Configuration.GetConnectionString("AIFunctionEndpoint")));
         }

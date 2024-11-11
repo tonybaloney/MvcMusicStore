@@ -1,21 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MvcMusicStoreCore.Extensions;
 
 namespace MvcMusicStoreCore.Models
 {
     public class SampleData
     {
-        public async static Task Seed(DbContext context)
+        public async static Task Seed(DbContext context, AIFunctionApiClient aiFunctionApiClient)
         {
             const string imgUrl = "~/Images/placeholder.png";
 
             (int lastIndex, List<Genre> genres) = await AddGenres(context);
             var artists = await AddArtists(context, lastIndex);
-            await AddAlbums(context, imgUrl, genres, artists);
+            await AddAlbums(context, imgUrl, genres, artists, aiFunctionApiClient);
 
             await context.SaveChangesAsync();
         }
 
-        private async static Task AddAlbums(DbContext context, string imgUrl, List<Genre> genres, List<Artist> artists)
+        private async static Task AddAlbums(DbContext context, string imgUrl, List<Genre> genres, List<Artist> artists, AIFunctionApiClient aiFunctionApiClient)
         {
             int i = 0;
             List<Album> albums =
@@ -483,8 +484,13 @@ namespace MvcMusicStoreCore.Models
                 new Album { AlbumId = ++i, Title = "Zooropa", GenreName = "Rock", Price = 8.99M, ArtistName = "U2", AlbumArtUrl = $"/images/albums/{i}.jpg" },
                 new Album { AlbumId = ++i, Title = "Zoso", GenreName = "Rock", Price = 8.99M, ArtistName = "Led Zeppelin", AlbumArtUrl = $"/images/albums/{i}.jpg" },
             ];
-        
-            albums.ForEach(a => context.Set<Album>().Add(a));
+
+            foreach (var a in albums)
+            {
+                var embedding = await aiFunctionApiClient.GetRecordEmbeddingsAsync(a.Title, a.ArtistName, a.GenreName);
+                a.Embeddings = embedding ?? [];
+                context.Set<Album>().Add(a);
+            }
         }
 
         private async static Task<List<Artist>> AddArtists(DbContext context, int i)

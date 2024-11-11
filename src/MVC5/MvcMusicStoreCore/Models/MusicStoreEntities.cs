@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
+using MvcMusicStoreCore.Extensions;
 
 namespace MvcMusicStoreCore.Models
 {
-    public class MusicStoreEntities(string connectionString) : DbContext
+    public class MusicStoreEntities(string connectionString, AIFunctionApiClient aiFunctionApiClient) : DbContext
     {
         public DbSet<Album>     Albums { get; set; }
         public DbSet<Genre>     Genres { get; set; }
@@ -20,7 +19,7 @@ namespace MvcMusicStoreCore.Models
                 var testGenre = await context.Set<Genre>().FirstOrDefaultAsync(b => b.Name == "Pop", cancellationToken);
                 if (testGenre == null)
                 {
-                    await SampleData.Seed(context);
+                    await SampleData.Seed(context, aiFunctionApiClient);
                 }
             });
         }
