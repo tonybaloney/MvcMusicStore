@@ -12,14 +12,13 @@ musicbrainzngs.set_useragent(
 )
 
 if __name__ == '__main__':
-
     with open('album_lookup.json') as album_lookup:
         album_lookup = json.load(album_lookup)
     
     for album in album_lookup:
-
+        image_path = pathlib.Path('..', 'src', 'MVC5', 'MvcMusicStore', 'Images', 'Albums') / '{}.jpg'.format(album['AlbumId'])
         # if image already exists, skip
-        if pathlib.Path('..', 'images', '{}.jpg'.format(album['AlbumId'])).exists():
+        if image_path.exists():
             print("Image already exists for {}".format(album['Title']))
             continue
 
@@ -35,19 +34,26 @@ if __name__ == '__main__':
         # "offset", not shown here) and specifies the number of results to
         # return.
         result = musicbrainzngs.search_releases(artist=album['Name'], release=album['Title'],
-                                                limit=1)
+                                                limit=10)
         # On success, result is a dictionary with a single key:
         # "release-list", which is a list of dictionaries.
         if not result['release-list']:
             print("no release found", album['Name'], album['Title'])
-        release = result['release-list'][0]
-
-        release_id = release['id']
-        try:
-            data = musicbrainzngs.get_image_front(release_id, size="500")
-            
-            # write to images/
-            with open('../images/{}.jpg'.format(album['AlbumId']), 'wb') as f:
-                f.write(data)
-        except:
-            print("No front image found for {}".format(album['Title']))
+            continue
+        data = None
+        for release in result['release-list']:
+            release_id = release['id']
+            try:
+                print("Trying to get front image for {}: {} ({})".format(album['AlbumId'], album['Title'], release_id))
+                data = musicbrainzngs.get_image_front(release_id, size="500")
+                
+                # write to images/
+                with open(image_path, 'wb') as f:
+                    f.write(data)
+                
+                print("Found front image for {}: {} ({})".format(album['AlbumId'], album['Title'], release_id))
+                break
+            except:
+                continue
+        if not data:
+            print("No front image found for {}: {} ({})".format(album['AlbumId'], album['Title'], release_id))
