@@ -38,11 +38,13 @@ namespace MvcMusicStoreCore.Controllers
                 return View(new DetailsViewModel() { Album = album, Similar = [] });
 
             // Get similar albums by vector distance
+#pragma warning disable EF9103 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             var similarAlbums = await storeDB.Albums
                 .Where(s => s.AlbumId != album.AlbumId)
                 .OrderBy(s => EF.Functions.VectorDistance(s.Embeddings, album.Embeddings))
                 .Take(5)
                 .ToListAsync();
+#pragma warning restore EF9103 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             return View(new DetailsViewModel() { Album = album, Similar = similarAlbums });
         }
 
@@ -85,10 +87,12 @@ namespace MvcMusicStoreCore.Controllers
             }
 
             // Get similar albums by vector distance
+#pragma warning disable EF9103 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             var similarAlbums = await storeDB.Albums
                 .OrderBy(s => EF.Functions.VectorDistance(s.Embeddings, embeddings))
                 .Take(5)
                 .ToListAsync();
+#pragma warning restore EF9103 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
             return View(new SearchViewModel { Query = q, AiQuery = query, Results = albums, Similar = similarAlbums});
         }
