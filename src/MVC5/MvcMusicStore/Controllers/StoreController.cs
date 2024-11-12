@@ -76,7 +76,7 @@ namespace MvcMusicStore.Controllers
             {
                 query = q;
             }
-            if (query == "I don't know that record")
+            if (query == "I don't know that record.")
             {
                 query = q;
             }
