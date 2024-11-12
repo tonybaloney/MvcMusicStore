@@ -62,6 +62,10 @@ namespace MvcMusicStoreCore.Controllers
             {
                 query = q;
             }
+            if (query == "I don't know that record")
+            {
+                query = q;
+            }
 
 #pragma warning disable CA1862 // Not supported in Cosmos DB
             var albums = await storeDB.Albums
