@@ -1,4 +1,4 @@
-using Azure.AI.OpenAI;
+﻿using Azure.AI.OpenAI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -30,13 +30,17 @@ namespace FunctionTrigger
 
             var response = chatClient.CompleteChat(
                 [
-                new SystemChatMessage("You rewrite user queries to help users find a record in an online music store. If you know the name of the record based on the user input, return it in the query. If you don't, return the keywords from the query. If the user enters the query in any language other than English, return the result in English. Only return the name of the record, not the name of the band."),
+                new SystemChatMessage("You rewrite user queries to help users find a record in an online music store. If you know the name of the record based on the user input, return it in the query. If you don't, return the phrase 'I don't know that record'. If the user enters the query in any language other than English, work out the name of the record and return the result in English. Only return the name of the record, not the name of the band."),
                 new UserChatMessage("The led zeppelin album with the blimp"),
                 new AssistantChatMessage("Led Zeppelin IV"),
                 new UserChatMessage("Nirvana baby"),
                 new AssistantChatMessage("Nevermind"),
                 new UserChatMessage("Oasis album wonderwall"),
                 new AssistantChatMessage("(What's the Story) Morning Glory?"),
+                new UserChatMessage("Worst U2 album"),
+                new AssistantChatMessage("Songs of Innocence"),
+                new UserChatMessage("有名なドクター・ドレーのアルバム"),
+                new AssistantChatMessage("The Chronic"),
                 new UserChatMessage(query),
             ]);
 
@@ -63,7 +67,7 @@ namespace FunctionTrigger
             }
             var embeddingClient = openAIClient.GetEmbeddingClient(_openAIEmbeddingsDeploymentName);
 
-            string query = $"Record: {name} by Artist: {artist} Genre: {genre}";
+            string query = $"Record: '{name}' by Artist: '{artist}'";
 
             var result = embeddingClient.GenerateEmbedding(query, new EmbeddingGenerationOptions { Dimensions = 512 });
             return new OkObjectResult(result.Value.ToFloats().ToArray());
