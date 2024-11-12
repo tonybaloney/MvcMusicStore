@@ -14,6 +14,8 @@ namespace MvcMusicStoreCore.Models
         {
             optionsBuilder.UseCosmos(connectionString, databaseName: "MvcMusicStore");
             optionsBuilder.EnableSensitiveDataLogging();
+            // optionsBuilder.EnableDetailedErrors();
+            //  optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s));
             optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
             {
                 var testGenre = await context.Set<Genre>().FirstOrDefaultAsync(b => b.Name == "Pop", cancellationToken);

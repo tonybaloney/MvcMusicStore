@@ -34,8 +34,16 @@ namespace MvcMusicStoreCore.Controllers
         public async Task<ActionResult> Details(int id) 
         {
             var album = await storeDB.Albums.FindAsync(id);
+            if (album is null)
+                return View(new DetailsViewModel() { Album = album, Similar = [] });
 
-            return View(album);
+            // Get similar albums by vector distance
+            var similarAlbums = await storeDB.Albums
+                .Where(s => s.AlbumId != album.AlbumId)
+                .OrderBy(s => EF.Functions.VectorDistance(s.Embeddings, album.Embeddings))
+                .Take(5)
+                .ToListAsync();
+            return View(new DetailsViewModel() { Album = album, Similar = similarAlbums });
         }
 
         async public Task<ActionResult> Search(string q)
@@ -54,9 +62,10 @@ namespace MvcMusicStoreCore.Controllers
             }
 
 #pragma warning disable CA1862 // Not supported in Cosmos DB
-            var albums = storeDB.Albums
+            var albums = await storeDB.Albums
                 .Where(a => a.Title.ToLower().Contains(query.ToLower()))
-                .Take(10);
+                .Take(10)
+                .ToListAsync();
 #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
             float[]? embeddings;
@@ -72,7 +81,7 @@ namespace MvcMusicStoreCore.Controllers
 
             if (embeddings == null)
             {
-                return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync(), Similar = [] });
+                return View(new SearchViewModel { Query = q, AiQuery = query, Results = albums, Similar = [] });
             }
 
             // Get similar albums by vector distance
@@ -81,7 +90,7 @@ namespace MvcMusicStoreCore.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            return View(new SearchViewModel { Query = q, AiQuery = query, Results = await albums.ToListAsync(), Similar = similarAlbums});
+            return View(new SearchViewModel { Query = q, AiQuery = query, Results = albums, Similar = similarAlbums});
         }
     }
 }

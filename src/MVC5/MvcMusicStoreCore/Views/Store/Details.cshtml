@@ -1,31 +1,47 @@
-﻿@model MvcMusicStoreCore.Models.Album
+﻿@model MvcMusicStoreCore.ViewModels.DetailsViewModel
 
 @{
-    ViewBag.Title = "Album - " + Model.Title;
+    ViewBag.Title = "Album - " + Model.Album.Title;
 }
 
-<h2>@Model.Title</h2>
+<h2>@Model.Album.Title</h2>
 
 <p>
-    <img alt="@Model.Title" class="img-fluid" src="@Url.Content(@Model.AlbumArtUrl)" />
+    <img alt="@Model.Album.Title" class="img-fluid" src="@Url.Content(@Model.Album.AlbumArtUrl)" />
 </p>
 
 <div id="album-details">
     <p>
         <em>Genre:</em>
-        @Model.GenreName
+        @Model.Album.GenreName
     </p>
     <p>
         <em>Artist:</em>
-        @Model.ArtistName
+        @Model.Album.ArtistName
     </p>
     <p>
         <em>Price:</em>
-        @Html.DisplayFor(model => model.Price)
+        @Html.DisplayFor(model => model.Album.Price)
     </p>
-    <button type="button" class="btn btn-secondary">
-        <i class="bi bi-cart"></i>
-        @Html.ActionLink("Add to cart", "AddToCart",
-            "ShoppingCart", new { id = Model.AlbumId }, "")
-    </button>
+    @Html.ActionLink("Add to cart", "AddToCart",
+            "ShoppingCart", new { id = Model.Album.AlbumId }, new { @class = "btn btn-dark"})
 </div>
+
+@if (Model.Similar != null && Model.Similar.Any())
+{
+    <h3>Similar Albums</h3>
+    <ul id="album-list" class="list-unstyled row">
+        @foreach (var album in Model.Similar)
+        {
+            <li class="col-lg-2 col-md-3 col-sm-4 col-6">
+                <a href="@Url.Action("Details", new { id = album.AlbumId })">
+                    @if (!string.IsNullOrEmpty(album.AlbumArtUrl))
+                    {
+                        <img alt="@album.Title" class="img-thumbnail" src="@Url.Content(@album.AlbumArtUrl)" />
+                    }
+                    <h5 class="control-label">@album.Title</h5>
+                </a>
+            </li>
+        }
+    </ul>
+}

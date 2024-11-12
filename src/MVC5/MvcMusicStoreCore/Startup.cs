@@ -16,7 +16,14 @@ namespace MvcMusicStoreCore
         {
             services.AddSystemWebAdapters();
             services.AddControllersWithViews();
-            services.AddScoped<MusicStoreEntities>(ctx => new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities"), ctx.GetRequiredService<AIFunctionApiClient>()));
+            services.AddScoped<MusicStoreEntities>(ctx =>
+            {
+                var ent = new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities"), ctx.GetRequiredService<AIFunctionApiClient>());
+                // ent.Database.EnsureDeletedAsync().GetAwaiter().GetResult();
+                // ent.Database.EnsureCreatedAsync().GetAwaiter().GetResult();
+                return ent;
+            });
+            // services.AddScoped<MusicStoreEntities>(ctx => new MusicStoreEntities(Configuration.GetConnectionString("MusicStoreEntities"), ctx.GetRequiredService<AIFunctionApiClient>()));
             services.AddTransient<SampleData>();
             services.AddScoped<AIFunctionApiClient>(_ => new AIFunctionApiClient(Configuration.GetConnectionString("AIFunctionEndpoint")));
         }
