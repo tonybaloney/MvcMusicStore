@@ -76,6 +76,10 @@ namespace MvcMusicStore.Controllers
             {
                 query = q;
             }
+            if (query == "I don't know that record")
+            {
+                query = q;
+            }
 
             var albums = storeDB.Albums
                 .Include("Artist")
